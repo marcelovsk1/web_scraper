@@ -4,72 +4,103 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 
-# Function to scroll to bottom
+# Função para rolar até o final da página
 def scroll_to_bottom(driver, max_clicks=3):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
-# Events to scrape
-def scrape_events(driver, url, selectors):
+# Função para raspar os eventos
+def scrape_events(driver, url, selectors, max_pages=1):
     driver.get(url)
     driver.implicitly_wait(30)
-    scroll_to_bottom(driver)
 
-    page_content = driver.page_source
-    webpage = BeautifulSoup(page_content, 'html.parser')
+    all_events = []
 
-    events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
-    event_list = []
+    for _ in range(max_pages):
+        # Coletar links dos eventos na página atual
+        page_content = driver.page_source
+        webpage = BeautifulSoup(page_content, 'html.parser')
+        events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
 
-    for event in events:
-        event_info = {}
-        for key, selector in selectors.items():
-            if key != 'event':
-                element = event.find(selector['tag'], class_=selector.get('class'))
-                event_info[key] = element.text.strip() if element else None
-                if key == 'Image URL':
-                    event_info[key] = element['src'] if element and 'src' in element.attrs else None
+        event_list = []
 
-        event_list.append(event_info)
+        for event in events:
+            event_info = {}
+            for key, selector in selectors.items():
+                if key != 'event':
+                    element = event.find(selector['tag'], class_=selector.get('class'))
+                    event_info[key] = element.text.strip() if element else None
+                    if key == 'Image URL':
+                        event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
-    return event_list
+            # Clique no link do evento para acessar a página detalhada
+            event_link = event.find('a', href=True)['href']
+            driver.get(event_link)
+
+            # Aguarde até que a página detalhada seja carregada completamente
+            time.sleep(3)
+
+            # Raspe informações detalhadas da página do evento
+            event_page_content = driver.page_source
+            event_page = BeautifulSoup(event_page_content, 'html.parser')
+
+            # Modifique esta parte de acordo com a estrutura específica da página do evento
+            # Exemplo: extrair informações do título, data, local e descrição
+            title = event_page.find('h1', class_='event-title css-0').text.strip() if event_page.find('h1', class_='event-title css-0') else None
+            description = event_page.find('p', class_='summary').text.strip() if event_page.find('p', class_='summary') else None
+            price = event_page.find('div', class_='conversion-bar__panel-info').text.strip() if event_page.find('div', class_='conversion-bar__panel-info') else None
+            date = event_page.find('span', class_='date-info__full-datetime').text.strip() if event_page.find('span', class_='date-info__full-datetime') else None
+            location = event_page.find('p', class_='location-info__address-text').text.strip() if event_page.find('p', class_='location-info__address-text') else None
+            tags_container = event_page.find('li', class_='tags-item inline')  # Altere para a classe correta da sua ul
+            tags = [tag.text.strip() for tag in tags_container.find_all('a')] if tags_container else None
+            organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
+            image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border') if event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border') else None
+
+            # Adicionar as informações detalhadas ao dicionário de informações do evento
+            event_info['Title'] = title
+            event_info['Description'] = description
+            event_info['Price'] = price
+            event_info['Date'] = date
+            event_info['Location'] = location
+            event_info['Tags'] = tags
+            event_info['Organizer'] = organizer.text.strip() if organizer else None
+            event_info['Image URL Organizer'] = image_url_organizer.get('xlink:href') if image_url_organizer else None  # Alteração aqui
+
+            # Adicionar o evento à lista de eventos
+            event_list.append(event_info)
+
+            # Navegar de volta para a página inicial de eventos para continuar a raspagem
+            driver.get(url)
+
+        all_events.extend(event_list)
+
+        # Avançar para a próxima página de eventos
+        try:
+            next_button = driver.find_element_by_link_text('Next')
+            next_button.click()
+            time.sleep(3)
+        except:
+            break  # Se não houver mais botão "Next", saia do loop
+
+    return all_events
 
 def main():
     sources = [
-        {
-            'name': 'Facebook',
-            "loadingTime": 10,
-            'url': 'https://www.facebook.com/events/explore/montreal-quebec/102184499823699/',
-            'selectors': {
-                'event': {'tag': 'div', 'class': 'x78zum5 x1n2onr6 xh8yej3'},
-                'Event': {'tag': 'span', 'class': 'x4k7w5x x1h91t0o x1h9r5lt x1jfb8zj xv2umb2 x1beo9mf xaigb6o x12ejxvf x3igimt xarpa2k xedcshv x1lytzrv x1t2pt76 x7ja8zs x1qrby5j'},
-                'Date': {'tag': 'div', 'class': 'xu06os2 x1ok221b'},
-                'Location': {'tag': 'span', 'class': 'x4k7w5x x1h91t0o x1h9r5lt x1jfb8zj xv2umb2 x1beo9mf xaigb6o x12ejxvf x3igimt xarpa2k xedcshv x1lytzrv x1t2pt76 x7ja8zs x1qrby5j'},
-                'Image URL': {'tag': 'img', 'class': 'x1rg5ohu x5yr21d xl1xv1r xh8yej3'}
-            }
-        },
-        {
-            'name': 'Ticketmaster',
-            'url': 'https://www.ticketmaster.ca/discover/concerts/montreal',
-            'selectors': {
-                'event': {'tag': 'div', 'class': 'Flex-sc-145abwg-0 bWTqsV accordion__item event-listing__item'},
-                'Event': {'tag': 'div', 'class': 'sc-fFeiMQ bCvzDL text text--dark text--primary sc-6jnhqk-0 kGOLzf event-tile__title'},
-                'Date': {'tag': 'div', 'class': 'sc-fFeiMQ dBYlim text text--accent text--accent01 text-tm sc-17ev1tv-0 cnj20n-0 firocR iZsGLV event-tile__date-title'},
-                'Location': {'tag': 'div', 'class': 'sc-fFeiMQ iIgzpz text text--dark text--secondary sc-1s3i3gy-0 hbRPym event-tile__sub-title'},
-                'Image URL': {'tag': 'img', 'class': 'event-listing__thumbnail'}
-            }
-        },
         {
             'name': 'Eventbrite',
             'url': 'https://www.eventbrite.com/d/canada--montreal/all-events/',
             'selectors': {
                 'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'},
-                'Event': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
+                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
+                'Description': {'tag': 'p', 'class': 'summary'},
                 'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
                 'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
                 'Price': {'tag': 'p', 'class': 'Typography_root__487rx #3a3247 Typography_body-md-bold__487rx Typography_align-match-parent__487rx'},
-                'Image URL': {'tag': 'img', 'class': 'event-card-image'}
+                'Image URL': {'tag': 'img', 'class': 'event-card-image'},
+                'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
+                'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
+                'Image URL Organizer': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'},
             },
         }
     ]
@@ -80,7 +111,7 @@ def main():
         options = Options()
         options.headless = True
         driver = webdriver.Chrome(options=options)
-        events = scrape_events(driver, source['url'], source['selectors'])
+        events = scrape_events(driver, source['url'], source['selectors'], max_pages=5)
         driver.quit()
 
         source_data = {
