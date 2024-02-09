@@ -23,8 +23,6 @@ def scrape_facebook_events(driver, url, selectors, max_pages=1):
         webpage = BeautifulSoup(page_content, 'html.parser')
         events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
 
-        event_list = []
-
         for event in events:
             event_info = {}
             for key, selector in selectors.items():
@@ -45,37 +43,28 @@ def scrape_facebook_events(driver, url, selectors, max_pages=1):
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
-            # Modifique esta parte de acordo com a estrutura específica da página do evento no Facebook
-            # Exemplo: extrair informações do título, data, local e descrição
-            title = event_page.find('h1', class_='event-title css-0').text.strip() if event_page.find('h1', class_='event-title css-0') else None
+            # Extrair informações detalhadas
+            title = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip() if event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6') else None
             description = event_page.find('p', class_='summary').text.strip() if event_page.find('p', class_='summary') else None
             date = event_page.find('span', class_='date-info__full-datetime').text.strip() if event_page.find('span', class_='date-info__full-datetime') else None
             location = event_page.find('p', class_='location-info__address-text').text.strip() if event_page.find('p', class_='location-info__address-text') else None
-            tags_container = event_page.find('li', class_='tags-item inline')  # Altere para a classe correta da sua ul
-            tags = [tag.text.strip() for tag in tags_container.find_all('a')] if tags_container else None
             organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
-            image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border') if event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border') else None
 
-            # Adicionar as informações detalhadas ao dicionário de informações do evento
             event_info['Title'] = title
             event_info['Description'] = description
             event_info['Date'] = date
             event_info['Location'] = location
-            event_info['Tags'] = tags
-            event_info['Organizer'] = organizer.text.strip() if organizer else None
-            event_info['Image URL Organizer'] = image_url_organizer.get('xlink:href') if image_url_organizer else None  # Alteração aqui
+            event_info['Organizer'] = organizer
 
             # Adicionar o evento à lista de eventos
-            event_list.append(event_info)
+            all_events.append(event_info)
 
             # Navegar de volta para a página inicial de eventos para continuar a raspagem
-            driver.get(url)
-
-        all_events.extend(event_list)
+            driver.back()  # Voltar para a lista de eventos
 
         # Avançar para a próxima página de eventos
         try:
-            next_button = driver.find_element_by_link_text('Next')
+            next_button = driver.find_element_by_xpath("//a[contains(text(), 'Next')]")
             next_button.click()
             time.sleep(3)
         except:
@@ -90,13 +79,12 @@ def main():
             'url': 'https://www.facebook.com/events/explore/montreal-quebec/102184499823699/',
             'selectors': {
                 'event': {'tag': 'div', 'class': 'du4w35lb k4urcfbm l9j0dhe7 sjgh65i0'},
-                'Title': {'tag': 'h2', 'class': 'event-title css-0'},
+                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
                 'Description': {'tag': 'p', 'class': 'summary'},
-                'Date': {'tag': 'span', 'class': 'date-info__full-datetime'},
-                'Location': {'tag': 'p', 'class': 'location-info__address-text'},
-                'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
+                'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
+                'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
+                'Image URL': {'tag': 'img', 'class': 'event-card-image'},
                 'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
-                'Image URL Organizer': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'},
             }
         }
     ]
