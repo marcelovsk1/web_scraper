@@ -5,39 +5,47 @@ from bs4 import BeautifulSoup
 import time
 
 # Função para rolar até o final da página
-def scroll_to_bottom(driver, max_clicks=3):
-    for _ in range(max_clicks):
+def scroll_to_bottom(driver, max_scroll=3):
+    for _ in range(max_scroll):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
+# Função para clicar em um link de evento de forma mais robusta
+def click_event_link(driver, event):
+    event_link = event.find('a', href=True)
+    if event_link:
+        event_link.click()
+        return True
+    else:
+        return False
+
 # Função para raspar os eventos do Facebook
-def scrape_facebook_events(driver, url, selectors, max_pages=1):
+def scrape_facebook_events(driver, url, selectors):
     driver.get(url)
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(10)  # Defina um tempo de espera implícito menor para evitar atrasos excessivos
 
     all_events = []
 
-    for _ in range(max_pages):
-        # Coletar links dos eventos na página atual
-        page_content = driver.page_source
-        webpage = BeautifulSoup(page_content, 'html.parser')
-        events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
+    scroll_to_bottom(driver)  # Rolagem inicial para carregar mais eventos
 
-        for event in events:
-            event_info = {}
-            for key, selector in selectors.items():
-                if key != 'event':
-                    element = event.find(selector['tag'], class_=selector.get('class'))
-                    event_info[key] = element.text.strip() if element else None
-                    if key == 'Image URL':
-                        event_info[key] = element['src'] if element and 'src' in element.attrs else None
+    # Coletar links dos eventos na página atual
+    page_content = driver.page_source
+    webpage = BeautifulSoup(page_content, 'html.parser')
+    events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
 
-            # Clique no link do evento para acessar a página detalhada
-            event_link = event.find('a', href=True)['href']
-            driver.get(event_link)
+    for event in events:
+        event_info = {}
+        for key, selector in selectors.items():
+            if key != 'event':
+                element = event.find(selector['tag'], class_=selector.get('class'))
+                event_info[key] = element.text.strip() if element else None
+                if key == 'Image URL':
+                    event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
+        # Clique no link do evento para acessar a página detalhada
+        if click_event_link(driver, event):
             # Aguarde até que a página detalhada seja carregada completamente
-            time.sleep(3)
+            time.sleep(5)  # Aumente o tempo de espera para garantir que a página seja totalmente carregada
 
             # Raspe informações detalhadas da página do evento
             event_page_content = driver.page_source
@@ -50,25 +58,19 @@ def scrape_facebook_events(driver, url, selectors, max_pages=1):
             location = event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None
             organizer = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft') if event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft') else None
 
+
             event_info['Title'] = title
             event_info['Description'] = description
             event_info['Date'] = date
             event_info['Location'] = location
             event_info['Organizer'] = organizer
 
-            # Adicionar o evento à lista de eventos
             all_events.append(event_info)
 
             # Navegar de volta para a página inicial de eventos para continuar a raspagem
             driver.back()  # Voltar para a lista de eventos
-
-        # Avançar para a próxima página de eventos
-        try:
-            next_button = driver.find_element_by_xpath("//a[contains(text(), 'Next')]")
-            next_button.click()
-            time.sleep(3)
-        except:
-            break  # Se não houver mais botão "Next", saia do loop
+        else:
+            print("Link do evento não encontrado. Pulando para o próximo evento.")
 
     return all_events
 
@@ -95,7 +97,7 @@ def main():
         options = Options()
         options.headless = True
         driver = webdriver.Chrome(options=options)
-        events = scrape_facebook_events(driver, source['url'], source['selectors'], max_pages=5)
+        events = scrape_facebook_events(driver, source['url'], source['selectors'])
         driver.quit()
 
         source_data = {
@@ -105,19 +107,15 @@ def main():
 
         all_events.append(source_data)
 
+        # Imprimir os dados JSON no terminal
+        print(json.dumps(source_data, indent=2))
+
     file_name = "events_data_facebook.json"  # Nome do arquivo JSON a ser criado
 
     with open(file_name, "w") as json_file:
         json.dump(all_events, json_file, indent=2)
 
     print(f"Os dados JSON foram gravados em {file_name}")
-
-    # Carregar o arquivo JSON
-    with open(file_name, 'r') as file:
-        data = json.load(file)
-
-    # Imprimir o conteúdo do arquivo JSON no terminal
-    print(json.dumps(data, indent=2))
 
 if __name__ == "__main__":
     main()
