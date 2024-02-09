@@ -1,24 +1,264 @@
 [
   {
-    "source_name": "Facebook",
+    "source_name": "Eventbrite",
     "events": [
       {
-        "Event": "SOLD OUT | Lost Frequencies, Surf Mesa | All Stand Together Tour - Montr\u00e9al",
-        "Date": "SAT, FEB 24 AT 10:00 PM EST",
-        "Location": "SOLD OUT | Lost Frequencies, Surf Mesa | All Stand Together Tour - Montr\u00e9al",
-        "Image URL": "https://scontent.fmgf1-1.fna.fbcdn.net/v/t39.30808-6/413973829_765954242243175_2446899296580867322_n.jpg?stp=c0.54.1920.916a_dst-jpg_s320x320&_nc_cat=109&ccb=1-7&_nc_sid=d8d9c5&_nc_ohc=Jy5wmyxubrkAX9pacYL&_nc_ht=scontent.fmgf1-1.fna&oh=00_AfAntC6bXN5tBRYkxXHANhSflrOcLIItC7clyfz2laGFJQ&oe=65CA6F01"
+        "Title": "ELEV8 - LA CONF\u00c9RENCE ULTIME DES COURTIERS EN 2024",
+        "Description": "UN RASSEMBLEMENT UNIQUE POUR CEUX QUI ASPIRENT \u00c0 L\u2019EXCELLENCE.",
+        "Date": "Thu, Feb 15, 2024 7:00 AM - 10:00 PM EST",
+        "Location": "Montreal Convention Centre",
+        "Price": "From $282.57",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F658751169%2F1804283135643%2F1%2Foriginal.20231214-173709?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C52%2C1640%2C820&s=4123dfba01be62d5fb803447d60d4d1c",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
       },
       {
-        "Event": "Thievery Corporation - Montreal, CA",
-        "Date": "SAT, MAR 2 AT 8:00 PM EST",
-        "Location": "Thievery Corporation - Montreal, CA",
-        "Image URL": "https://scontent.fmgf1-1.fna.fbcdn.net/v/t39.30808-6/415040092_349724207804759_8466371807254301977_n.jpg?stp=c0.147.2048.977a_dst-jpg_s320x320&_nc_cat=108&ccb=1-7&_nc_sid=d8d9c5&_nc_ohc=TCah8axw15kAX_VLmPF&_nc_ht=scontent.fmgf1-1.fna&oh=00_AfDskylIMCr4HOR5L8hGBESsUuTX3X7LC2M9o_PDrgecsw&oe=65C9E729"
+        "Title": "Concert NES/SNES",
+        "Description": "Concert NES/SNES",
+        "Date": "sam. 10 f\u00e9vr. 2024 19:30 - 22:00 EST. Ouverture des portes \u00e06pm",
+        "Location": "Salle Marguerite-Bourgeoys",
+        "Price": "23\u00a0$ \u2013 40\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F570915309%2F300041748392%2F1%2Foriginal.20230808-124420?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C15%2C1200%2C600&s=c98f562f7c9fd7d9c3cd996145535cef",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
       },
       {
-        "Event": null,
+        "Title": "2024 ONF LIVE IN CANADA *MONTREAL",
+        "Description": "2024 ONF LIVE IN CANADA [Be Here Now in Canada]\nONF is bringing their electrifying energy to Canada with their highly-anticipated tour!",
+        "Date": "Sun, Mar 3, 2024 7:00 PM - 10:00 PM EST",
+        "Location": "Rialto Theatre",
+        "Price": "From $58.86",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F658057899%2F1052235979703%2F1%2Foriginal.20231213-161105?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=fdef60e19e38209664c4c0d092f25d06",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Gala Proprias - 23 f\u00e9vrier 2024",
+        "Description": "Gala Proprias - 23 f\u00e9vrier 2024",
+        "Date": "D\u00e9bute le ven., 23 f\u00e9vr. 2024 15:00 EST",
+        "Location": "Sheraton Laval",
+        "Price": "0\u00a0$ \u2013 188\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F675741359%2F184468621219%2F1%2Foriginal.20240116-172555?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=9d3515e7a42fc2772657209a85bc5e08",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Mailler les savoirs dans un processus de recherche collaborative",
+        "Description": "L'IUD et ses partenaires organisent une journ\u00e9e captivante et festive que vous ne voudrez pas manquer !",
+        "Date": "D\u00e9bute le jeu., 22 f\u00e9vr. 2024 13:00 EST",
+        "Location": "200 Rue Sherbrooke O",
+        "Price": "0\u00a0$ \u2013 15\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F670848419%2F264355046975%2F1%2Foriginal.20240109-182922?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C9000%2C4500&s=e70c93d771f8d4cff79d557d75ab12c5",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Global Tarraxo Festival - Montreal 3rd Edition",
+        "Description": "Global Tarraxo and Lavish Productions are more than happy to announce the 3rd edition of Global Tarraxo Festival\u203c\ufe0f",
+        "Date": "February 9 \u00b7 2pm - February 12 \u00b7 3am EST",
+        "Location": "H\u00f4tel Z\u00e9ro1",
+        "Price": "From CA$27.96",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F684946779%2F234633946482%2F1%2Foriginal.20240129-161053?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=77%2C0%2C1492%2C746&s=b831f6da4b76e8aa9528eb52b7c11843",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Protecting Human Rights in AI: Integration in Risk-Based Governance",
+        "Description": "This international conference aims at advancing the conversation on integrating human rights in risk-based approaches to AI governance.",
+        "Date": "Starts on Wed, Feb 14, 2024 5:00 PM EST",
+        "Location": "Mila - Institut qu\u00e9b\u00e9cois d'intelligence artificielle",
+        "Price": "$262.50",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F649209729%2F1373604421203%2F1%2Foriginal.20231128-011331?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C4500%2C2250&s=f0e576f52f2bdd32aa4138baa9213ee3",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": "Mila - Quebec AI Institute",
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "The Love Lounge",
+        "Description": "Join us as we throw the biggest Valentine party in Montreal ! Get your tickets quick before they are all SOLD OUT !",
+        "Date": "February 17 \u00b7 10pm - February 18 \u00b7 3am EST",
+        "Location": "TBA (To Be Announced)",
+        "Price": "From CA$33.28",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F681429719%2F1482256116143%2F1%2Foriginal.20240124-052654?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=1%2C570%2C1544%2C772&s=a2759d39dd22123ca3b9d91c2526c84a",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": "Way to Party",
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Ru : r\u00e9silience, int\u00e9gration et amour au-del\u00e0 des fronti\u00e8res",
+        "Description": "Projection du film Ru suivie d\u2019une discussion avec Kim Th\u00fay, le r\u00e9alisateur Charles-Olivier Michaud et Marie-Jeanne Blain, anthropologue.",
+        "Date": "D\u00e9bute le mar., 27 f\u00e9vr. 2024 18:00 EST",
+        "Location": "Th\u00e9\u00e2tre Outremont",
+        "Price": "10\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F685249029%2F164894113146%2F1%2Foriginal.20240129-210401?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=b35f95206d6ac4141e684cd1490b9251",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "MOVING BEYOND SEASON 4 PRESENTS: UNLOCKED",
+        "Description": "A dedication to our teachers - the guiding forces who shape us into the individuals we are and unlock the depths of our mind, body and soul.",
+        "Date": "Fri, Feb 9, 2024 6:00 PM - Sat, Feb 10, 2024 10:00 PM EST",
+        "Location": "Studio Rush",
+        "Price": "$40.24",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F673415789%2F552774522993%2F1%2Foriginal.20240112-175546?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C275%2C1100%2C550&s=f4c76e11fe45a8d0b78f59f6f3b49450",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Fiert\u00e9 des neiges / Winter Pride 2024",
+        "Description": "Fiert\u00e9 des neiges perp\u00e9tue la tradition annuelle de rassembler le r\u00e9seau Fiert\u00e9 au travail Canada \u00e0 Montr\u00e9al.",
+        "Date": "mer. 21 f\u00e9vr. 2024 16:00 - 20:30 EST",
+        "Location": "Square BDC",
+        "Price": "\u00c0 partir de 0\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F681030739%2F92706872045%2F1%2Foriginal.20240123-193124?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C70%2C2250%2C1125&s=37ca553bc63bca7f47211c7e6fa44dea",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Kiss of the Dragon - Lunar New Year Celebration 2024 at YOKO LUNA",
+        "Description": "Get ready to be blessed with prosperous year. Kicking off the year of the Dragon at Yoko Luna this February 9!  Limited tickets",
+        "Date": "February 9 \u00b7 11pm - February 10 \u00b7 3am EST",
+        "Location": "Yoko Luna",
+        "Price": "From CA$23.76",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F682164769%2F208032481639%2F1%2Foriginal.20240125-001210?w=400&auto=format%2Ccompress&q=75&sharp=10&s=f341d7063d512e5217f2eb60ae0619c6",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": "Lanny, Ray and Dk",
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "The Godfather's Wonderful Life (Saturday Night)",
+        "Description": "I Can Dream Theatre\u2019s ninth major production\n\"The Godfather's Wonderful Life\"",
+        "Date": "Starts on Sat, Feb 10, 2024 7:30 PM EST",
+        "Location": "The Eric Maclean S.J. Centre for the Performing Arts",
+        "Price": "$25 \u2013 $35",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F667719139%2F181389286716%2F1%2Foriginal.20240104-192903?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C25%2C512%2C256&s=e4388509d2d16078ba92f7a4b9f54273",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": null,
+        "Description": null,
         "Date": null,
         "Location": null,
-        "Image URL": null
+        "Price": "Fin des ventes",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F615042829%2F1784417392093%2F1%2Foriginal.20231006-185717?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=248%2C0%2C2428%2C1214&s=2052dad649c7f05e224abf9e1c6abed5",
+        "Tags": null,
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Ricardo Quevedo  |  Montreal",
+        "Description": "\u00a1Prep\u00e1rate para re\u00edr a carcajadas con el genial Ricardo Quevedo en su show en Montreal",
+        "Date": "Wednesday, February 21 \u00b7 8 - 10pm EST",
+        "Location": "Cin\u00e9ma Rialto",
+        "Price": "From CA$99.51",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F649121189%2F287464467428%2F1%2Foriginal.20231127-223726?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C19%2C1080%2C540&s=ed87d8b957547e8965e3f622503cd138",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": null,
+        "Description": null,
+        "Date": null,
+        "Location": "AfroMus\u00e9e",
+        "Price": "$22.63",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F608558129%2F1135320991923%2F1%2Foriginal.20230928-150726?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C241%2C1080%2C540&s=87696d9e80a3e65398dbb1a19ac6040b",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "Chawa Masqu\u00e9",
+        "Description": "Montr\u00e9al, \u00e0 l\u2019occasion de la St-Valentin, MF Entertainment vous pr\u00e9sente un \u00e9v\u00e9nement sans \u00e9gal. Vous allez vous r\u00e9galer.",
+        "Date": "February 10 \u00b7 10pm - February 11 \u00b7 3am EST",
+        "Location": "3971 Boulevard Robert",
+        "Price": "From CA$0",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F653978929%2F866045435813%2F1%2Foriginal.20231205-233455?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C8192%2C4096&s=b3b1a9c59a81a57292a680233b51d5d0",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": "MF Entertainment",
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "THE MASK!",
+        "Description": "Montreal, don't miss out on The Mask \u2013 An upscale Caribbean Carnival experience !\n-\nNo face, no case !",
+        "Date": "Fri, Feb 16, 2024 9:00 PM - Sat, Feb 17, 2024 3:00 AM EST",
+        "Location": "Aux Quartiers Belle-Gueule",
+        "Price": "From $27.96",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F679427929%2F670715208873%2F1%2Foriginal.20240121-231840?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C450%2C1200%2C600&s=03e5e1d3d980f2eddc3b557a6ae95a86",
+        "Tags": [
+          "Canada Events"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "La Grande D\u00e9gustation",
+        "Description": "D\u00e9couvrez les produits des transformateurs d\u2019ici",
+        "Date": "ven. 16 f\u00e9vr. 2024 11:30 - 14:00 UTC\u22125",
+        "Location": "March\u00e9 Bonsecours",
+        "Price": "38,27\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F667638669%2F134163153780%2F1%2Foriginal.20240104-180007?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=548032dcd5ec7e538badcb8b3c28abec",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
+      },
+      {
+        "Title": "SOUS LA VO\u00dbTE \u00c9TOIL\u00c9E",
+        "Description": "Joignez-vous au Choeur St-Laurent pour un concert c\u00e9leste!\nJoin the St. Lawrence Choir for a heavenly concert!",
+        "Date": "sam. 10 f\u00e9vr. 2024 19:30 - 22:00 EST",
+        "Location": "\u00c9glise Saint-\u00c9douard",
+        "Price": "0\u00a0$ \u2013 56,64\u00a0$",
+        "Image URL": "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F632813889%2F523136861513%2F1%2Foriginal.20231101-150449?w=512&auto=format%2Ccompress&q=75&sharp=10&rect=0%2C0%2C2160%2C1080&s=c12feaa64ef79b4a3c84ab61de0c1cb9",
+        "Tags": [
+          "\u00c9v\u00e9nements \u00e0 Canada"
+        ],
+        "Organizer": null,
+        "Image URL Organizer": null
       }
     ]
   }
