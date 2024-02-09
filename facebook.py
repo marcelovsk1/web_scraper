@@ -79,12 +79,12 @@ def main():
             'url': 'https://www.facebook.com/events/explore/montreal-quebec/102184499823699/',
             'selectors': {
                 'event': {'tag': 'div', 'class': 'du4w35lb k4urcfbm l9j0dhe7 sjgh65i0'},
-                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
-                'Description': {'tag': 'p', 'class': 'summary'},
-                'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Image URL': {'tag': 'img', 'class': 'event-card-image'},
-                'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
+                'Title': {'tag': 'span', 'class': 'x1lliihq x6ikm8r x10wlt62 x1n2onr6'},
+                'Description': {'tag': 'div', 'class': 'xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs'},
+                'Date': {'tag': 'span', 'class': 'x193iq5w xeuugli x13faqbe x1vvkbs xlh3980 xvmahel x1n0sxbx x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x3x7a5m x1f6kntn xvq8zen x1xlr1w8 x1a1m0xk x1yc453h'},
+                'Location': {'tag': 'span', 'class': 'xt0psk2'},
+                'Image URL': {'tag': 'img', 'class': 'xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3'},
+                'Organizer': {'tag': 'span', 'class': 'x1lliihq x6ikm8r x10wlt62 x1n2onr6 xlyipyv xuxw1ft'},
             }
         }
     ]
