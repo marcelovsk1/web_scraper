@@ -38,6 +38,7 @@ def scrape_events(driver, url, selectors):
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
+            # 'Location' has the same 'span' class of 'Organizer' then we need to specify this:
             location_element = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6', style="-webkit-box-orient: vertical; -webkit-line-clamp: 4; display: -webkit-box;")
             location = location_element.text.strip() if location_element else None
 
