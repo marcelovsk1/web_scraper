@@ -53,7 +53,7 @@ def scrape_events(driver, url, selectors, max_pages=1):
                 description = event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip() if event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs') else None
                 date = event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip() if event_page.find('div', class_='x1e56ztr x1xmf6yo') else None
                 location = event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None
-                address_element = event_page.find('span', class_='x193iq5w xeuugli x13faqbe x1vvkbs xlh3980 xvmahel x1n0sxbx x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x3x7a5m x1f6kntn xvq8zen xo1l8bm xi81zsa x1yc453h')
+                address_element = event_page.find('div', class_='xu06os2 x1ok221b')
                 address = address_element.text.strip() if address_element else None
                 organizer = event_page.find('span', class_='xt0psk2') if event_page.find('a', class_='xt0psk2') else None
                 organizer_IMG = event_page.find('img', class_='xz74otr')
@@ -92,7 +92,7 @@ def main():
                 'Description': {'tag': 'div', 'class': 'xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs'},
                 'Date': {'tag': 'div', 'class': 'x1e56ztr x1xmf6yo'},
                 'Location': {'tag': 'span', 'class': 'xt0psk2'},
-                'Address': {'tag': 'span', 'class': 'x193iq5w xeuugli x13faqbe x1vvkbs xlh3980 xvmahel x1n0sxbx x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x x4zkp8e x3x7a5m x1f6kntn xvq8zen xo1l8bm xi81zsa x1yc453h'},
+                'Address': {'tag': 'div', 'class': 'xu06os2 x1ok221b'},
                 'Image URL': {'tag': 'img', 'class': 'x1rg5ohu'},
             }
         }
