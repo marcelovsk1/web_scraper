@@ -11,13 +11,17 @@ def scroll_to_bottom(driver, max_clicks=3):
         time.sleep(3)
 
 # Função para raspar os eventos
-def scrape_events(driver, url, selectors, max_pages=1):
+def scrape_events(driver, url, selectors):
     driver.get(url)
     driver.implicitly_wait(30)
 
     all_events = []
+    max_scroll = 2  # Defina o número máximo de rolagens para baixo
 
-    for _ in range(max_pages):
+    # Conjunto para armazenar URLs de eventos únicos
+    unique_event_urls = set()
+
+    for _ in range(max_scroll):
         # Coletar links dos eventos na página atual
         page_content = driver.page_source
         webpage = BeautifulSoup(page_content, 'html.parser')
@@ -34,18 +38,21 @@ def scrape_events(driver, url, selectors, max_pages=1):
                     if key == 'Image URL':
                         event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
-            # Clique no link do evento para acessar a página detalhada
+            # Raspar informações detalhadas da página do evento
             event_link = event.find('a', href=True)
             if event_link:
                 event_url = event_link['href']
                 if event_url.startswith('/'):
                     event_url = 'https://www.facebook.com' + event_url
+            else:
+                # Se o link do evento não for encontrado, pule este evento
+                continue
 
+            # Verificar se o URL do evento já foi coletado antes
+            if event_url not in unique_event_urls:
                 driver.get(event_url)
-
                 time.sleep(3)
 
-                # Raspe informações detalhadas da página do evento
                 event_page_content = driver.page_source
                 event_page = BeautifulSoup(event_page_content, 'html.parser')
 
@@ -68,18 +75,19 @@ def scrape_events(driver, url, selectors, max_pages=1):
 
                 event_list.append(event_info)
 
+                # Adicionar o URL do evento ao conjunto de URLs únicos
+                unique_event_urls.add(event_url)
+
                 driver.back()
 
         all_events.extend(event_list)
 
-        try:
-            next_button = driver.find_element_by_link_text('Next')
-            next_button.click()
-            time.sleep(3)
-        except:
-            break  # Se não houver mais botão "Next", saia do loop
+        # Role para baixo para carregar mais eventos
+        scroll_to_bottom(driver)
 
     return all_events
+
+
 
 def main():
     sources = [
@@ -87,7 +95,7 @@ def main():
             'name': 'Facebook',
             'url': 'https://www.facebook.com/events/explore/montreal-quebec/102184499823699/',
             'selectors': {
-                'event': {'tag': 'div', 'class': 'x6s0dn4 x78zum5 x1a02dak xw7yly9 xcud41i xat24cr x139jcc6'},
+                'event': {'tag': 'div', 'class': 'x78zum5 x1n2onr6 xh8yej3'},
                 'Title': {'tag': 'span', 'class': 'x1lliihq x6ikm8r x10wlt62 x1n2onr6'},
                 'Description': {'tag': 'div', 'class': 'xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs'},
                 'Date': {'tag': 'div', 'class': 'x1e56ztr x1xmf6yo'},
