@@ -87,7 +87,7 @@ def main():
                 'Description': {'tag': 'div', 'class': 'xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs'},
                 'Date': {'tag': 'div', 'class': 'x1e56ztr x1xmf6yo'},
                 'Location': {'tag': 'span', 'class': 'xt0psk2'},
-                'Image URL': {'tag': 'div', 'class': 'x1qjc9v5 x1q0q8m5 x1qhh985 xu3j5b3 xcfux6l x26u7qi xm0m39n x13fuv20 x972fbf x1ey2m1c x9f619 x78zum5 xds687c xdt5ytf x1iyjqo2 xs83m0k x1qughib xat24cr x11i5rnm x1mh8g0r xdj266r x2lwn1j xeuugli x18d9i69 x4uap5 xkhd6sd xexx8yu x10l6tqk x17qophe x13vifvy x1ja2u2z'},
+                'Image URL': {'tag': 'img', 'class': 'x1rg5ohu'},
             }
         }
     ]
