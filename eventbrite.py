@@ -4,13 +4,11 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 
-# Função para rolar até o final da página
-def scroll_to_bottom(driver, max_clicks=3):
+def scroll_to_bottom(driver, max_clicks=1):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
-# Função para raspar os eventos
 def scrape_events(driver, url, selectors, max_pages=1):
     driver.get(url)
     driver.implicitly_wait(30)
@@ -18,7 +16,7 @@ def scrape_events(driver, url, selectors, max_pages=1):
     all_events = []
 
     for _ in range(max_pages):
-        # Coletar links dos eventos na página atual
+
         page_content = driver.page_source
         webpage = BeautifulSoup(page_content, 'html.parser')
         events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
@@ -34,19 +32,14 @@ def scrape_events(driver, url, selectors, max_pages=1):
                     if key == 'Image URL':
                         event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
-            # Clique no link do evento para acessar a página detalhada
             event_link = event.find('a', href=True)['href']
             driver.get(event_link)
 
-            # Aguarde até que a página detalhada seja carregada completamente
             time.sleep(3)
 
-            # Raspe informações detalhadas da página do evento
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
-            # Modifique esta parte de acordo com a estrutura específica da página do evento
-            # Exemplo: extrair informações do título, data, local e descrição
             title = event_page.find('h1', class_='event-title css-0').text.strip() if event_page.find('h1', class_='event-title css-0') else None
             description = event_page.find('p', class_='summary').text.strip() if event_page.find('p', class_='summary') else None
             price = event_page.find('div', class_='conversion-bar__panel-info').text.strip() if event_page.find('div', class_='conversion-bar__panel-info') else None
@@ -55,7 +48,15 @@ def scrape_events(driver, url, selectors, max_pages=1):
             tags_container = event_page.find('li', class_='tags-item inline')  # Altere para a classe correta da sua ul
             tags = [tag.text.strip() for tag in tags_container.find_all('a')] if tags_container else None
             organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
-            image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border') if event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border') else None
+            image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border')
+            if image_url_organizer:
+                image_tag = image_url_organizer.find('image')
+                if image_tag:
+                    event_info['Image URL Organizer'] = image_tag.get('xlink:href')
+                else:
+                    event_info['Image URL Organizer'] = None
+            else:
+                event_info['Image URL Organizer'] = None
 
             # Adicionar as informações detalhadas ao dicionário de informações do evento
             event_info['Title'] = title
@@ -65,7 +66,6 @@ def scrape_events(driver, url, selectors, max_pages=1):
             event_info['Location'] = location
             event_info['Tags'] = tags
             event_info['Organizer'] = organizer.text.strip() if organizer else None
-            event_info['Image URL Organizer'] = image_url_organizer.get('xlink:href') if image_url_organizer else None  # Alteração aqui
 
             # Adicionar o evento à lista de eventos
             event_list.append(event_info)
@@ -121,18 +121,17 @@ def main():
 
         all_events.append(source_data)
 
-    file_name = "events_data.json"  # Nome do arquivo JSON a ser criado
+    file_name = "events_data.json"
 
     with open(file_name, "w") as json_file:
         json.dump(all_events, json_file, indent=2)
 
     print(f"Os dados JSON foram gravados em {file_name}")
 
-    # Carregar o arquivo JSON
+    # JSON
     with open(file_name, 'r') as file:
         data = json.load(file)
 
-    # Imprimir o conteúdo do arquivo JSON no terminal
     print(json.dumps(data, indent=2))
 
 if __name__ == "__main__":

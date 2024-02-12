@@ -14,7 +14,7 @@ def scrape_events(driver, url, selectors):
     driver.implicitly_wait(10)
 
     all_events = []
-    max_scroll = 3
+    max_scroll = 5
 
     unique_event_urls = set()
 
