@@ -54,14 +54,14 @@ def scrape_events(driver, url, selectors, max_pages=1):
                 date = event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip() if event_page.find('div', class_='x1e56ztr x1xmf6yo') else None
                 location = event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None
                 organizer = event_page.find('span', class_='xt0psk2') if event_page.find('a', class_='xt0psk2') else None
-                organizer_IMG = event_page.find('', class_='') if event_page.find('', class_='') else None
+                organizer_IMG = event_page.find('img', class_='xz74otr')
 
                 event_info['Title'] = title
                 event_info['Description'] = description
                 event_info['Date'] = date
                 event_info['Location'] = location
                 event_info['Organizer'] = organizer.text.strip() if organizer else None
-                event_info['Organizer_IMG'] = organizer_IMG
+                event_info['Organizer_IMG'] = organizer_IMG['src'] if organizer_IMG else None
 
                 event_list.append(event_info)
 
