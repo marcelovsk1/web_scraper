@@ -4,25 +4,25 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 
-# Função para rolar até o final da página
+# Function to scroll to the bottom of the page
 def scroll_to_bottom(driver, max_clicks=3):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
-# Função para raspar os eventos
+# Function to scrape the events
 def scrape_events(driver, url, selectors):
     driver.get(url)
     driver.implicitly_wait(30)
 
     all_events = []
-    max_scroll = 2  # Defina o número máximo de rolagens para baixo
+    max_scroll = 5  # Define the maximum number of scrolls downwards
 
-    # Conjunto para armazenar URLs de eventos únicos
+    # Set to store unique event URLs
     unique_event_urls = set()
 
     for _ in range(max_scroll):
-        # Coletar links dos eventos na página atual
+        # Collect links of events on the current page
         page_content = driver.page_source
         webpage = BeautifulSoup(page_content, 'html.parser')
         events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
@@ -38,17 +38,16 @@ def scrape_events(driver, url, selectors):
                     if key == 'Image URL':
                         event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
-            # Raspar informações detalhadas da página do evento
+            # Scrape detailed information from the event page
             event_link = event.find('a', href=True)
             if event_link:
                 event_url = event_link['href']
                 if event_url.startswith('/'):
                     event_url = 'https://www.facebook.com' + event_url
             else:
-                # Se o link do evento não for encontrado, pule este evento
+                # If event link is not found, skip this event
                 continue
 
-            # Verificar se o URL do evento já foi coletado antes
             if event_url not in unique_event_urls:
                 driver.get(event_url)
                 time.sleep(3)
@@ -75,19 +74,15 @@ def scrape_events(driver, url, selectors):
 
                 event_list.append(event_info)
 
-                # Adicionar o URL do evento ao conjunto de URLs únicos
                 unique_event_urls.add(event_url)
 
                 driver.back()
 
         all_events.extend(event_list)
 
-        # Role para baixo para carregar mais eventos
         scroll_to_bottom(driver)
 
     return all_events
-
-
 
 def main():
     sources = [
@@ -106,17 +101,17 @@ def main():
         }
     ]
 
-    # Configurações do Selenium para executar o navegador em segundo plano
+    # Selenium settings to run the browser in the background
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Execute o Chrome em segundo plano
-    chrome_options.add_argument("--disable-gpu")  # Desative a aceleração de hardware
+    chrome_options.add_argument("--headless")  # Run Chrome in the background
+    chrome_options.add_argument("--disable-gpu")  # Disable hardware acceleration
 
     # Selenium init
     driver = webdriver.Chrome(options=chrome_options)
 
     all_events = []
     for source in sources:
-        print(f"Raspar eventos da fonte: {source['name']}")
+        print(f"Scraping events from: {source['name']}")
         events = scrape_events(driver, source['url'], source['selectors'])
         all_events.extend(events)
 
