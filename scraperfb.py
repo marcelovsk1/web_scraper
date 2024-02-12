@@ -43,37 +43,30 @@ def scrape_events(driver, url, selectors, max_pages=1):
 
                 driver.get(event_url)
 
-                # Aguarde até que a página detalhada seja carregada completamente
                 time.sleep(3)
 
                 # Raspe informações detalhadas da página do evento
                 event_page_content = driver.page_source
                 event_page = BeautifulSoup(event_page_content, 'html.parser')
 
-                # Modifique esta parte de acordo com a estrutura específica da página do evento
-                # Exemplo: extrair informações do título, data, local e descrição
                 title = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip() if event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6') else None
                 description = event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip() if event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs') else None
                 date = event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip() if event_page.find('div', class_='x1e56ztr x1xmf6yo') else None
                 location = event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None
                 organizer = event_page.find('span', class_='xt0psk2') if event_page.find('a', class_='xt0psk2') else None
 
-                # Adicionar as informações detalhadas ao dicionário de informações do evento
                 event_info['Title'] = title
                 event_info['Description'] = description
                 event_info['Date'] = date
                 event_info['Location'] = location
                 event_info['Organizer'] = organizer.text.strip() if organizer else None
 
-                # Adicionar o evento à lista de eventos
                 event_list.append(event_info)
 
-                # Navegar de volta para a página inicial de eventos para continuar a raspagem
                 driver.back()
 
         all_events.extend(event_list)
 
-        # Avançar para a próxima página de eventos
         try:
             next_button = driver.find_element_by_link_text('Next')
             next_button.click()
