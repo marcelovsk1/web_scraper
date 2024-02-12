@@ -103,20 +103,18 @@ def main():
     chrome_options.add_argument("--headless")  # Execute o Chrome em segundo plano
     chrome_options.add_argument("--disable-gpu")  # Desative a aceleração de hardware
 
-    # Inicializar o driver do Selenium
+    # Selenium init
     driver = webdriver.Chrome(options=chrome_options)
 
-    # Raspagem de eventos de todas as fontes especificadas
     all_events = []
     for source in sources:
         print(f"Raspar eventos da fonte: {source['name']}")
         events = scrape_events(driver, source['url'], source['selectors'])
         all_events.extend(events)
 
-    # Salvar os eventos em formato JSON no terminal
+    # JSON
     print(json.dumps(all_events, indent=4))
 
-    # Fechar o driver do Selenium após a conclusão da raspagem
     driver.quit()
 
 if __name__ == "__main__":
