@@ -23,13 +23,17 @@ def scrape_events(driver, source):
         webpage = BeautifulSoup(page_content, 'html.parser')
         events = webpage.find_all(source['selectors']['event']['tag'], class_=source['selectors']['event'].get('class'))
 
+        print(f"Found {len(events)} events on the page.")  # Adicionar esta linha para verificar quantos eventos foram encontrados
+
         for event in events:
             event_link = event.find('a', href=True)
             if not event_link:
+                print("Event link not found.")
                 continue
 
             event_url = 'https://www.facebook.com' + event_link['href'] if event_link['href'].startswith('/') else event_link['href']
             if event_url in unique_event_urls:
+                print("Event already scraped.")
                 continue
 
             driver.get(event_url)
@@ -38,14 +42,22 @@ def scrape_events(driver, source):
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
+            title_element = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6')
+            if not title_element:
+                print("Title element not found.")
+                continue
+
+            title = title_element.text.strip()
+
+            print(f"Scraping event: {title}")  # Adicionar esta linha para verificar qual evento está sendo processado
+
+            # Restante do código de scraping...
+
             location_element = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6', style="-webkit-box-orient: vertical; -webkit-line-clamp: 4; display: -webkit-box;")
             location = location_element.text.strip() if location_element else None
 
             organizer_element = event_page.find('span', class_='xt0psk2')
             organizer = organizer_element.text.strip() if organizer_element else None
-
-            title_element = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6')
-            title = title_element.text.strip() if title_element else None
 
             event_info = {
                 'Title': title,
