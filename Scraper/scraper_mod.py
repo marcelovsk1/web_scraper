@@ -66,6 +66,7 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=5):
                 'Description': event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip(),
                 'Date': event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip(),
                 'Location': location,
+                'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
                 'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
                 'Organizer': event_page.find('span', class_='xt0psk2').text.strip(),
                 'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None
@@ -184,10 +185,10 @@ def main():
                 'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
                 'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
                 'Price': {'tag': 'p', 'class': 'Typography_root__487rx #3a3247 Typography_body-md-bold__487rx Typography_align-match-parent__487rx'},
-                'Image URL': {'tag': 'img', 'class': 'event-card-image'},
+                'ImageURL': {'tag': 'img', 'class': 'event-card-image'},
                 'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
                 'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
-                'Image URL Organizer': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'},
+                'Organizer_IMG': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'},
             },
         }
     ]
@@ -210,10 +211,10 @@ def main():
             continue
         all_events.extend(events)
 
-    # Comparar eventos duplicados
+    # Compare duplicate events
     duplicates = find_duplicate_events(all_events, similarity_threshold=80)
 
-    # Imprimir eventos duplicados encontrados
+    # Print duplicate events found
     print("Duplicate Events:")
     for event1, event2, similarity in duplicates:
         print(f"Similarity: {similarity}%")
@@ -221,9 +222,18 @@ def main():
         print("Event 2:", event2)
         print()
 
-    print(json.dumps(all_events, indent=4))
+    # JSON
+    with open('events.json', 'w') as f:
+        json.dump(all_events, f, indent=4)
 
     driver.quit()
 
 if __name__ == "__main__":
     main()
+
+#     print(json.dumps(all_events, indent=4))
+
+#     driver.quit()
+
+# if __name__ == "__main__":
+#     main()
