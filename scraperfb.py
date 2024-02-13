@@ -4,7 +4,7 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
 
-def scroll_to_bottom(driver, max_clicks=3):
+def scroll_to_bottom(driver, max_clicks=5):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(1)
