@@ -46,6 +46,7 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=5):
                 'Date': event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip(),
                 'Location': location,
                 'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
+                'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
                 'Organizer': event_page.find('span', class_='xt0psk2').text.strip(),
                 'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None
             }
