@@ -15,7 +15,6 @@ def calculate_similarity(str1, str2):
     return fuzz.token_sort_ratio(str1, str2)
 
 def format_date(date_str, source):
-    # Implemente a formatação da data de acordo com a fonte do evento (Facebook, Eventbrite, etc.)
     if source == 'Facebook':
         # Implemente a formatação para datas do Facebook
         pass
@@ -130,7 +129,6 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             else:
                 event_info['Image URL Organizer'] = None
 
-            # Adicionar as informações detalhadas ao dicionário de informações do evento
             event_info['Title'] = title
             event_info['Description'] = description
             event_info['Price'] = price
@@ -139,10 +137,8 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             event_info['Tags'] = tags
             event_info['Organizer'] = organizer.text.strip() if organizer else None
 
-            # Adicionar o evento à lista de eventos
             event_list.append(event_info)
 
-            # Navegar de volta para a página inicial de eventos para continuar a raspagem
             driver.get(url)
 
         all_events.extend(event_list)
