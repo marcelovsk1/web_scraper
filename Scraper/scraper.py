@@ -3,8 +3,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
+import re
 
-def scroll_to_bottom(driver, max_clicks=5):
+def scroll_to_bottom(driver, max_clicks=1):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(1)
@@ -36,18 +37,34 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=5):
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
-            # 'Location' has the same 'span' class of 'Organizer' then we need to specify this:
-            location_element = event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6', style="-webkit-box-orient: vertical; -webkit-line-clamp: 4; display: -webkit-box;")
-            location = location_element.text.strip() if location_element else None
+            # Find the organizer element
+            organizer_element = event_page.find('span', class_='xt0psk2')
+            organizer = organizer_element.text.strip() if organizer_element else None
+
+            # Extrair a data, hora de início e hora de término
+            date_time_str = event_page.find('span', class_='x193iq5w').text.strip()
+            match = re.match(r'([A-Za-z]+), ([A-Za-z]+) (\d{1,2}), (\d{4}) FROM (\d{1,2}:\d{2} (?:AM|PM)) TO (\d{1,2}:\d{2} (?:AM|PM)) EST', date_time_str)
+            if match:
+                day_of_week = match.group(1)
+                month = match.group(2)
+                day = match.group(3)
+                year = match.group(4)
+                start_time = match.group(5)
+                end_time = match.group(6)
+            else:
+                day_of_week = month = day = year = start_time = end_time = None
 
             event_info = {
                 'Title': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
                 'Description': event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip(),
-                'Date': event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip(),
-                'Location': location,
-                'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
+                'Day of Week': day_of_week,
+                'Date': f"{day} {month} {year}",
+                'Start Time': start_time,
+                'End Time': end_time,
+                'Location': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
                 'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
-                'Organizer': event_page.find('span', class_='xt0psk2').text.strip(),
+                'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
+                'Organizer': organizer,
                 'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None
             }
 
@@ -149,16 +166,8 @@ def main():
             'name': 'Eventbrite',
             'url': 'https://www.eventbrite.com/d/canada--montreal/all-events/',
             'selectors': {
-                'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'},
-                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
-                'Description': {'tag': 'p', 'class': 'summary'},
-                'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Price': {'tag': 'p', 'class': 'Typography_root__487rx #3a3247 Typography_body-md-bold__487rx Typography_align-match-parent__487rx'},
-                'Image URL': {'tag': 'img', 'class': 'event-card-image'},
-                'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
-                'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
-                'Image URL Organizer': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'},
+                'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'}
+
             },
         }
     ]
