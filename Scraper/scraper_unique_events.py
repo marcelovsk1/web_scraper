@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 import time
 from fuzzywuzzy import fuzz
 from datetime import datetime
-import re
 
 def scroll_to_bottom(driver, max_clicks=5):
     for _ in range(max_clicks):
@@ -61,7 +60,7 @@ def format_location(location_str, source):
         return None
 
 
-def scrape_facebook_events(driver, url, selectors, max_scroll=5):
+def scrape_facebook_events(driver, url, selectors, max_scroll=1):
     driver.get(url)
     driver.implicitly_wait(10)
 
@@ -88,31 +87,14 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=5):
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
-            # Find the organizer element
-            organizer_element = event_page.find('span', class_='xt0psk2')
-            organizer = organizer_element.text.strip() if organizer_element else None
-
-            # Extrair a data, hora de início e hora de término
-            date_time_str = event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip()
-            pattern = r'(\w+, \w+ \d{1,2}, \d{4}) FROM (\d{1,2}:\d{2} [AP]M) TO (\d{1,2}:\d{2} [AP]M)'
-            match = re.match(pattern, date_time_str)
-            if match:
-                date = match.group(1)
-                start_time = match.group(2)
-                end_time = match.group(3)
-            else:
-                date = start_time = end_time = None
-
             event_info = {
                 'Title': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
                 'Description': event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip(),
-                'Date': date,
-                'Start Time': start_time,
-                'End Time': end_time,
+                'Date': event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip() if event_page.find('div', class_='x1e56ztr x1xmf6yo') else None,
                 'Location': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
                 'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
                 'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
-                'Organizer': organizer,
+                'Organizer': event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None,
                 'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None
             }
 
