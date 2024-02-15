@@ -6,6 +6,8 @@ import time
 from fuzzywuzzy import fuzz
 from datetime import datetime
 
+import soupsieve
+
 def scroll_to_bottom(driver, max_clicks=1):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -114,8 +116,12 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             location_element = event_page.find('div', class_='location-info__address')
             location = location_element.text.strip() if location_element else None
             ImageURL = get_previous_page_image_url(driver)
-            tags_container = event_page.find('li', class_='tags-item inline')  # Altere para a classe correta da sua ul
-            tags = [tag.text.strip() for tag in tags_container.find_all('a')] if tags_container else None
+            tags_elements = event_page.find_all('li', class_='tags-item inline')
+            tags = []
+            for tag_element in tags_elements:
+                tag_link = tag_element.find('a')
+                if tag_link:
+                    tags.append(tag_link.text.strip())
             organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
             image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border')
             if image_url_organizer:
