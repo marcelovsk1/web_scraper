@@ -17,26 +17,28 @@ def calculate_similarity(str1, str2):
 from datetime import datetime
 
 def format_date(date_str, source):
-    #%A: Represents the full name of the day of the week (for example, "Sunday").
-    #%B: Represents the full name of the month (for example, "March").
-    #%d: Represents the day of the month as a decimal number (for example, "03").
-    #%Y: Represents the four-digit year (for example, "2024").
-    if source == 'Facebook':
+    date_str_lower = date_str.lower()
+    source_lower = source.lower()
+
+    if source_lower == 'facebook':
         # Facebook: SUNDAY, MARCH 3, 2024
         formatted_date = datetime.strptime(date_str, '%A, %B %d, %Y')
         return formatted_date
-    elif source == 'Eventbrite':
+    elif source_lower == 'eventbrite':
         # Eventbrite: Sunday, March 3
         formatted_date = datetime.strptime(date_str, '%A, %B %d')
         return formatted_date
     else:
-        # Trate outras fontes, se necessário
         return None
 
+    #%A: Represents the full name of the day of the week (for example, "Sunday").
+    #%B: Represents the full name of the month (for example, "March").
+    #%d: Represents the day of the month as a decimal number (for example, "03").
+    #%Y: Represents the four-digit year (for example, "2024").
 
 def format_location(location_str, source):
     if source == 'Facebook':
-        # Se a localização contiver uma vírgula, dividimos em nome do local e endereço
+        # If location contains a comma, we split into location name and address
         if ',' in location_str:
             location, address = location_str.split(',', 1)
             return {
@@ -44,19 +46,16 @@ def format_location(location_str, source):
                 'Address': address.strip()
             }
         else:
-            # Se não houver vírgula, assumimos que é apenas o nome do local
+            # If there is no comma, we assume it is just the location name
             return {
                 'Location': location_str.strip(),
-                'Address': None
             }
     elif source == 'Eventbrite':
-        # O Eventbrite já fornece a localização e o endereço separados
+        # Eventbrite already provides separate location and address
         return {
             'Location': location_str.strip(),
-            'Address': None  # Não precisamos do endereço separado para o Eventbrite
         }
     else:
-        # Trate outras fontes, se necessário
         return None
 
 
@@ -93,7 +92,6 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=1):
                 'Date': event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip() if event_page.find('div', class_='x1e56ztr x1xmf6yo') else None,
                 'Location': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
                 'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
-                'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
                 'Organizer': event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None,
                 'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None,
                 'EventUrl': event_url
@@ -110,30 +108,22 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=1):
 
 
 def get_previous_page_image_url(driver):
-    # URL da página anterior
     url = 'https://www.eventbrite.com/d/canada--montreal/all-events/?page=1'
 
-    # Fazendo a requisição HTTP
     driver.get(url)
 
-    # Verificando se a requisição foi bem-sucedida
     if driver.page_source:
-        # Parsing do HTML
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-
-        # Encontrando a tag img com a classe 'event-card-image'
         img_tag = soup.find('img', class_='event-card-image')
 
-        # Verificando se a tag img foi encontrada
         if img_tag:
-            # Obtendo a URL da imagem do atributo src
             return img_tag['src']
 
     return None
 
 def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
     driver.get(url)
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(10)
 
     all_events = []
 
@@ -199,11 +189,9 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             driver.back()
 
         try:
-            # Tenta encontrar e clicar no botão "Next"
             next_button = driver.find_element_by_link_text('Next')
             next_button.click()
         except:
-            # Se não encontrar o botão "Next" ou ocorrer algum erro, sai do loop
             break
 
     return all_events
@@ -230,17 +218,17 @@ def main():
         {
             'name': 'Eventbrite',
             'url': 'https://www.eventbrite.com/d/canada--montreal/all-events/',
-            'selectors': {
-                'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'},
-                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
-                'Description': {'tag': 'p', 'class': 'summary'},
-                'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Price': {'tag': 'p', 'class': 'Typography_root__487rx #3a3247 Typography_body-md-bold__487rx Typography_align-match-parent__487rx'},
-                'ImageURL': {'tag': 'img', 'class': 'event-card-image'},
-                'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
-                'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
-                'Organizer_IMG': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'},
+                'selectors': {
+                    'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'},
+                    'Title': {'tag': 'h2', 'class': 'event-card__title'},
+                    'Description': {'tag': 'p', 'class': 'event-card__description'},
+                    'Date': {'tag': 'p', 'class': 'event-card__date'},
+                    'Location': {'tag': 'p', 'class': 'event-card__location'},
+                    'Price': {'tag': 'p', 'class': 'event-card__price'},
+                    'ImageURL': {'tag': 'img', 'class': 'event-card__image'},
+                    'Tags': {'tag': 'ul', 'class': 'event-card__tags'},
+                    'Organizer': {'tag': 'a', 'class': 'event-card__organizer'},
+                    'Organizer_IMG': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'}
             },
         }
     ]

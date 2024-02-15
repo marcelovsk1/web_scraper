@@ -85,7 +85,7 @@ def get_previous_page_image_url(driver):
 
 def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
     driver.get(url)
-    driver.implicitly_wait(30)
+    driver.implicitly_wait(10)
 
     all_events = []
 
@@ -168,14 +168,14 @@ def main():
             'url': 'https://www.eventbrite.com/d/canada--montreal/all-events/',
             'selectors': {
                 'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'},
-                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
-                'Description': {'tag': 'p', 'class': 'summary'},
-                'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
-                'Price': {'tag': 'p', 'class': 'Typography_root__487rx #3a3247 Typography_body-md-bold__487rx Typography_align-match-parent__487rx'},
-                'ImageURL': {'tag': 'img', 'class': 'hero-img'},
-                'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
-                'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
+                'Title': {'tag': 'h2', 'class': 'event-card__title'},
+                'Description': {'tag': 'p', 'class': 'event-card__description'},
+                'Date': {'tag': 'p', 'class': 'event-card__date'},
+                'Location': {'tag': 'p', 'class': 'event-card__location'},
+                'Price': {'tag': 'p', 'class': 'event-card__price'},
+                'ImageURL': {'tag': 'img', 'class': 'event-card__image'},
+                'Tags': {'tag': 'ul', 'class': 'event-card__tags'},
+                'Organizer': {'tag': 'a', 'class': 'event-card__organizer'},
             },
         }
     ]
