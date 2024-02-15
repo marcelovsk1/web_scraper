@@ -3,79 +3,83 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import time
-import re
+from fuzzywuzzy import fuzz
+from datetime import datetime
 
 def scroll_to_bottom(driver, max_clicks=1):
     for _ in range(max_clicks):
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(1)
 
-def scrape_facebook_events(driver, url, selectors, max_scroll=5):
-    driver.get(url)
-    driver.implicitly_wait(10)
+def calculate_similarity(str1, str2):
+    return fuzz.token_sort_ratio(str1, str2)
 
-    all_events = []
-    unique_event_urls = set()
+from datetime import datetime
 
-    for _ in range(max_scroll):
-        page_content = driver.page_source
-        webpage = BeautifulSoup(page_content, 'html.parser')
-        events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
+def format_date(date_str, source):
+    #%A: Represents the full name of the day of the week (for example, "Sunday").
+    #%B: Represents the full name of the month (for example, "March").
+    #%d: Represents the day of the month as a decimal number (for example, "03").
+    #%Y: Represents the four-digit year (for example, "2024").
+    if source == 'Facebook':
+        # Facebook: SUNDAY, MARCH 3, 2024
+        formatted_date = datetime.strptime(date_str, '%A, %B %d, %Y')
+        return formatted_date
+    elif source == 'Eventbrite':
+        # Eventbrite: Sunday, March 3
+        formatted_date = datetime.strptime(date_str, '%A, %B %d')
+        return formatted_date
+    else:
+        # Trate outras fontes, se necessário
+        return None
 
-        for event in events:
-            event_link = event.find('a', href=True)
-            if not event_link:
-                continue
 
-            event_url = 'https://www.facebook.com' + event_link['href'] if event_link['href'].startswith('/') else event_link['href']
-            if event_url in unique_event_urls:
-                continue
-
-            driver.get(event_url)
-            time.sleep(1)
-
-            event_page_content = driver.page_source
-            event_page = BeautifulSoup(event_page_content, 'html.parser')
-
-            # Find the organizer element
-            organizer_element = event_page.find('span', class_='xt0psk2')
-            organizer = organizer_element.text.strip() if organizer_element else None
-
-            # Extrair a data, hora de início e hora de término
-            date_time_str = event_page.find('span', class_='x193iq5w').text.strip()
-            match = re.match(r'([A-Za-z]+), ([A-Za-z]+) (\d{1,2}), (\d{4}) FROM (\d{1,2}:\d{2} (?:AM|PM)) TO (\d{1,2}:\d{2} (?:AM|PM)) EST', date_time_str)
-            if match:
-                day_of_week = match.group(1)
-                month = match.group(2)
-                day = match.group(3)
-                year = match.group(4)
-                start_time = match.group(5)
-                end_time = match.group(6)
-            else:
-                day_of_week = month = day = year = start_time = end_time = None
-
-            event_info = {
-                'Title': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
-                'Description': event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip(),
-                'Day of Week': day_of_week,
-                'Date': f"{day} {month} {year}",
-                'Start Time': start_time,
-                'End Time': end_time,
-                'Location': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
-                'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
-                'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
-                'Organizer': organizer,
-                'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None
+def format_location(location_str, source):
+    if source == 'Facebook':
+        # Se a localização contiver uma vírgula, dividimos em nome do local e endereço
+        if ',' in location_str:
+            location, address = location_str.split(',', 1)
+            return {
+                'Location': location.strip(),
+                'Address': address.strip()
             }
+        else:
+            # Se não houver vírgula, assumimos que é apenas o nome do local
+            return {
+                'Location': location_str.strip(),
+                'Address': None
+            }
+    elif source == 'Eventbrite':
+        # O Eventbrite já fornece a localização e o endereço separados
+        return {
+            'Location': location_str.strip(),
+            'Address': None  # Não precisamos do endereço separado para o Eventbrite
+        }
+    else:
+        # Trate outras fontes, se necessário
+        return None
 
-            all_events.append(event_info)
-            unique_event_urls.add(event_url)
+def get_previous_page_image_url(driver):
+    # URL da página anterior
+    url = 'https://www.eventbrite.com/d/canada--montreal/all-events/?page=1'
 
-            driver.back()
+    # Fazendo a requisição HTTP
+    driver.get(url)
 
-        scroll_to_bottom(driver)
+    # Verificando se a requisição foi bem-sucedida
+    if driver.page_source:
+        # Parsing do HTML
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    return all_events
+        # Encontrando a tag img com a classe 'event-card-image'
+        img_tag = soup.find('img', class_='event-card-image')
+
+        # Verificando se a tag img foi encontrada
+        if img_tag:
+            # Obtendo a URL da imagem do atributo src
+            return img_tag['src']
+
+    return None
 
 def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
     driver.get(url)
@@ -84,12 +88,9 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
     all_events = []
 
     for _ in range(max_pages):
-
         page_content = driver.page_source
         webpage = BeautifulSoup(page_content, 'html.parser')
         events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
-
-        event_list = []
 
         for event in events:
             event_info = {}
@@ -97,13 +98,11 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
                 if key != 'event':
                     element = event.find(selector['tag'], class_=selector.get('class'))
                     event_info[key] = element.text.strip() if element else None
-                    if key == 'Image URL':
+                    if key == 'ImageURL':
                         event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
             event_link = event.find('a', href=True)['href']
             driver.get(event_link)
-
-            time.sleep(3)
 
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
@@ -112,7 +111,9 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             description = event_page.find('p', class_='summary').text.strip() if event_page.find('p', class_='summary') else None
             price = event_page.find('div', class_='conversion-bar__panel-info').text.strip() if event_page.find('div', class_='conversion-bar__panel-info') else None
             date = event_page.find('span', class_='date-info__full-datetime').text.strip() if event_page.find('span', class_='date-info__full-datetime') else None
-            location = event_page.find('p', class_='location-info__address-text').text.strip() if event_page.find('p', class_='location-info__address-text') else None
+            location_element = event_page.find('div', class_='location-info__address')
+            location = location_element.text.strip() if location_element else None
+            ImageURL = get_previous_page_image_url(driver)
             tags_container = event_page.find('li', class_='tags-item inline')  # Altere para a classe correta da sua ul
             tags = [tag.text.strip() for tag in tags_container.find_all('a')] if tags_container else None
             organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
@@ -126,48 +127,47 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             else:
                 event_info['Image URL Organizer'] = None
 
-            # Adicionar as informações detalhadas ao dicionário de informações do evento
             event_info['Title'] = title
             event_info['Description'] = description
             event_info['Price'] = price
             event_info['Date'] = date
             event_info['Location'] = location
+            event_info['ImageURL'] = ImageURL
             event_info['Tags'] = tags
             event_info['Organizer'] = organizer.text.strip() if organizer else None
+            event_info['EventUrl'] = event_link  # Adiciona o EventUrl ao dicionário
 
-            # Adicionar o evento à lista de eventos
-            event_list.append(event_info)
 
-            # Navegar de volta para a página inicial de eventos para continuar a raspagem
-            driver.get(url)
+            all_events.append(event_info)
 
-        all_events.extend(event_list)
+            driver.back()
 
-        # Avançar para a próxima página de eventos
         try:
+            # Tenta encontrar e clicar no botão "Next"
             next_button = driver.find_element_by_link_text('Next')
             next_button.click()
-            time.sleep(3)
         except:
-            break  # Se não houver mais botão "Next", saia do loop
+            # Se não encontrar o botão "Next" ou ocorrer algum erro, sai do loop
+            break
 
     return all_events
+
 
 def main():
     sources = [
         {
-            'name': 'Facebook',
-            'url': 'https://www.facebook.com/events/explore/montreal-quebec/102184499823699/',
-            'selectors': {
-                'event': {'tag': 'div', 'class': 'x78zum5 x1n2onr6 xh8yej3'}
-            }
-        },
-        {
             'name': 'Eventbrite',
             'url': 'https://www.eventbrite.com/d/canada--montreal/all-events/',
             'selectors': {
-                'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'}
-
+                'event': {'tag': 'div', 'class': 'discover-search-desktop-card discover-search-desktop-card--hiddeable'},
+                'Title': {'tag': 'h2', 'class': 'Typography_root__487rx #3a3247 Typography_body-lg__487rx event-card__clamp-line--two Typography_align-match-parent__487rx'},
+                'Description': {'tag': 'p', 'class': 'summary'},
+                'Date': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
+                'Location': {'tag': 'p', 'class': 'Typography_root__487rx #585163 Typography_body-md__487rx event-card__clamp-line--one Typography_align-match-parent__487rx'},
+                'Price': {'tag': 'p', 'class': 'Typography_root__487rx #3a3247 Typography_body-md-bold__487rx Typography_align-match-parent__487rx'},
+                'ImageURL': {'tag': 'img', 'class': 'hero-img'},
+                'Tags': {'tag': 'ul', 'class': 'your-ul-class-here'},
+                'Organizer': {'tag': 'a', 'class': 'descriptive-organizer-info__name-link'},
             },
         }
     ]

@@ -95,7 +95,8 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=1):
                 'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
                 'Address': event_page.find('div', class_='xu06os2 x1ok221b').text.strip(),
                 'Organizer': event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None,
-                'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None
+                'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None,
+                'EventUrl': event_url
             }
 
             all_events.append(event_info)
@@ -115,12 +116,9 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
     all_events = []
 
     for _ in range(max_pages):
-
         page_content = driver.page_source
         webpage = BeautifulSoup(page_content, 'html.parser')
         events = webpage.find_all(selectors['event']['tag'], class_=selectors['event'].get('class'))
-
-        event_list = []
 
         for event in events:
             event_info = {}
@@ -133,7 +131,6 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
 
             event_link = event.find('a', href=True)['href']
             driver.get(event_link)
-
             time.sleep(3)
 
             event_page_content = driver.page_source
@@ -167,19 +164,20 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             event_info['Address'] = address
             event_info['Tags'] = tags
             event_info['Organizer'] = organizer.text.strip() if organizer else None
+            event_info['EventUrl'] = event_link  # Adiciona o EventUrl ao dicionário
 
-            event_list.append(event_info)
+            all_events.append(event_info)
 
-            driver.get(url)
+            driver.back()
+            time.sleep(3)  # Adiciona um tempo de espera para evitar bloqueios
 
-        all_events.extend(event_list)
-
-        # Go back to events page
         try:
+            # Tenta encontrar e clicar no botão "Next"
             next_button = driver.find_element_by_link_text('Next')
             next_button.click()
             time.sleep(3)
         except:
+            # Se não encontrar o botão "Next" ou ocorrer algum erro, sai do loop
             break
 
     return all_events
