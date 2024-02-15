@@ -117,11 +117,13 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             location = location_element.text.strip() if location_element else None
             ImageURL = get_previous_page_image_url(driver)
             tags_elements = event_page.find_all('li', class_='tags-item inline')
+
             tags = []
             for tag_element in tags_elements:
                 tag_link = tag_element.find('a')
                 if tag_link:
                     tags.append(tag_link.text.strip())
+
             organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
             image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border')
             if image_url_organizer:
