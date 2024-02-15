@@ -109,6 +109,28 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=1):
     return all_events
 
 
+def get_previous_page_image_url(driver):
+    # URL da página anterior
+    url = 'https://www.eventbrite.com/d/canada--montreal/all-events/?page=1'
+
+    # Fazendo a requisição HTTP
+    driver.get(url)
+
+    # Verificando se a requisição foi bem-sucedida
+    if driver.page_source:
+        # Parsing do HTML
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
+        # Encontrando a tag img com a classe 'event-card-image'
+        img_tag = soup.find('img', class_='event-card-image')
+
+        # Verificando se a tag img foi encontrada
+        if img_tag:
+            # Obtendo a URL da imagem do atributo src
+            return img_tag['src']
+
+    return None
+
 def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
     driver.get(url)
     driver.implicitly_wait(30)
@@ -126,12 +148,11 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
                 if key != 'event':
                     element = event.find(selector['tag'], class_=selector.get('class'))
                     event_info[key] = element.text.strip() if element else None
-                    if key == 'Image URL':
+                    if key == 'ImageURL':
                         event_info[key] = element['src'] if element and 'src' in element.attrs else None
 
             event_link = event.find('a', href=True)['href']
             driver.get(event_link)
-            time.sleep(3)
 
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
@@ -140,11 +161,17 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             description = event_page.find('p', class_='summary').text.strip() if event_page.find('p', class_='summary') else None
             price = event_page.find('div', class_='conversion-bar__panel-info').text.strip() if event_page.find('div', class_='conversion-bar__panel-info') else None
             date = event_page.find('span', class_='date-info__full-datetime').text.strip() if event_page.find('span', class_='date-info__full-datetime') else None
-            location = event_page.find('p', class_='location-info__address-text').text.strip() if event_page.find('p', class_='location-info__address-text') else None
-            address_element = event_page.find('p', class_='location-info__address-text')
-            address = address_element.text.strip() if address_element else None
-            tags_container = event_page.find('li', class_='tags-item inline')  # Altere para a classe correta da sua ul
-            tags = [tag.text.strip() for tag in tags_container.find_all('a')] if tags_container else None
+            location_element = event_page.find('div', class_='location-info__address')
+            location = location_element.text.strip() if location_element else None
+            ImageURL = get_previous_page_image_url(driver)
+            tags_elements = event_page.find_all('li', class_='tags-item inline')
+
+            tags = []
+            for tag_element in tags_elements:
+                tag_link = tag_element.find('a')
+                if tag_link:
+                    tags.append(tag_link.text.strip())
+
             organizer = event_page.find('a', class_='descriptive-organizer-info__name-link') if event_page.find('a', class_='descriptive-organizer-info__name-link') else None
             image_url_organizer = event_page.find('svg', class_='eds-avatar__background eds-avatar__background--has-border')
             if image_url_organizer:
@@ -161,21 +188,20 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
             event_info['Price'] = price
             event_info['Date'] = date
             event_info['Location'] = location
-            event_info['Address'] = address
+            event_info['ImageURL'] = ImageURL
             event_info['Tags'] = tags
             event_info['Organizer'] = organizer.text.strip() if organizer else None
             event_info['EventUrl'] = event_link  # Adiciona o EventUrl ao dicionário
 
+
             all_events.append(event_info)
 
             driver.back()
-            time.sleep(3)  # Adiciona um tempo de espera para evitar bloqueios
 
         try:
             # Tenta encontrar e clicar no botão "Next"
             next_button = driver.find_element_by_link_text('Next')
             next_button.click()
-            time.sleep(3)
         except:
             # Se não encontrar o botão "Next" ou ocorrer algum erro, sai do loop
             break
