@@ -14,9 +14,10 @@ def scroll_to_bottom(driver, max_clicks=5):
 def calculate_similarity(str1, str2):
     return fuzz.token_sort_ratio(str1, str2)
 
-from datetime import datetime
-
 def format_date(date_str, source):
+    if date_str is None:
+        return None
+
     date_str_lower = date_str.lower()
     source_lower = source.lower()
 
@@ -30,7 +31,6 @@ def format_date(date_str, source):
         return formatted_date
     else:
         return None
-
     #%A: Represents the full name of the day of the week (for example, "Sunday").
     #%B: Represents the full name of the month (for example, "March").
     #%d: Represents the day of the month as a decimal number (for example, "03").
@@ -59,7 +59,7 @@ def format_location(location_str, source):
         return None
 
 
-def scrape_facebook_events(driver, url, selectors, max_scroll=1):
+def scrape_facebook_events(driver, url, selectors, max_scroll=50):
     driver.get(url)
     driver.implicitly_wait(10)
 
@@ -86,11 +86,16 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=1):
             event_page_content = driver.page_source
             event_page = BeautifulSoup(event_page_content, 'html.parser')
 
+            location_div = event_page.find('div', class_='x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz xt0b8zv xzsf02u x1s688f')
+            location_span = event_page.find('span', class_='xt0psk2')
+
+            location_text = location_div.text.strip() if location_div else (location_span.text.strip() if location_span else None)
+
             event_info = {
                 'Title': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
                 'Description': event_page.find('div', class_='xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs').text.strip(),
                 'Date': event_page.find('div', class_='x1e56ztr x1xmf6yo').text.strip() if event_page.find('div', class_='x1e56ztr x1xmf6yo') else None,
-                'Location': event_page.find('span', class_='x1lliihq x6ikm8r x10wlt62 x1n2onr6').text.strip(),
+                'Location': location_text,
                 'ImageURL': event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3')['src'] if event_page.find('img', class_='xz74otr x1ey2m1c x9f619 xds687c x5yr21d x10l6tqk x17qophe x13vifvy xh8yej3') else None,
                 'Organizer': event_page.find('span', class_='xt0psk2').text.strip() if event_page.find('span', class_='xt0psk2') else None,
                 'Organizer_IMG': event_page.find('img', class_='xz74otr')['src'] if event_page.find('img', class_='xz74otr') else None,
@@ -107,6 +112,7 @@ def scrape_facebook_events(driver, url, selectors, max_scroll=1):
     return all_events
 
 
+
 def get_previous_page_image_url(driver):
     url = 'https://www.eventbrite.com/d/canada--montreal/all-events/?page=1'
 
@@ -121,7 +127,7 @@ def get_previous_page_image_url(driver):
 
     return None
 
-def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
+def scrape_eventbrite_events(driver, url, selectors, max_pages=10):
     driver.get(url)
     driver.implicitly_wait(10)
 
@@ -198,12 +204,14 @@ def scrape_eventbrite_events(driver, url, selectors, max_pages=1):
 
 def find_unique_events(events):
     unique_events = []
-    seen_titles = set()
+    seen_event_info = set()
     for event in events:
-        title = event['Title']
-        if title not in seen_titles:
+        formatted_date = format_date(event.get('Date', ''), event.get('Source', ''))
+        formatted_location = format_location(event.get('Location', ''), event.get('Source', ''))
+        event_info = (event['Title'], formatted_date, formatted_location)
+        if event_info not in seen_event_info:
             unique_events.append(event)
-            seen_titles.add(title)
+            seen_event_info.add(event_info)
     return unique_events
 
 def main():
@@ -213,7 +221,7 @@ def main():
             'url': 'https://www.facebook.com/events/explore/montreal-quebec/102184499823699/',
             'selectors': {
                 'event': {'tag': 'div', 'class': 'x78zum5 x1n2onr6 xh8yej3'}
-            }
+            },
         },
         {
             'name': 'Eventbrite',
@@ -230,6 +238,7 @@ def main():
                     'Organizer': {'tag': 'a', 'class': 'event-card__organizer'},
                     'Organizer_IMG': {'tag': 'svg', 'class': 'eds-avatar__background eds-avatar__background--has-border'}
             },
+            'max_pages': 20
         }
     ]
 
